@@ -1,0 +1,22 @@
+[package]
+name = "tauri-plugin-ableton"
+description = "Tauri plugin that bridges ableton-core to Tauri apps"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+links = "tauri-plugin-ableton"
+exclude = ["/node_modules", "/dist-js"]
+
+[dependencies]
+ableton-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tauri = "2"
+thiserror.workspace = true
+tokio = { workspace = true, features = ["sync"] }
+tracing.workspace = true
+
+[build-dependencies]
+tauri-plugin = { version = "2", features = ["build"] }

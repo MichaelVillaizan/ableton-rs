@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-add-listener"
+description = "Enables the add_listener command without any pre-configured scope."
+commands.allow = ["add_listener"]
+
+[[permission]]
+identifier = "deny-add-listener"
+description = "Denies the add_listener command without any pre-configured scope."
+commands.deny = ["add_listener"]

@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-get-prop"
+description = "Enables the get_prop command without any pre-configured scope."
+commands.allow = ["get_prop"]
+
+[[permission]]
+identifier = "deny-get-prop"
+description = "Denies the get_prop command without any pre-configured scope."
+commands.deny = ["get_prop"]

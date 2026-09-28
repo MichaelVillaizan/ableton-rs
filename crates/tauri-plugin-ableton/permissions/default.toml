@@ -1,0 +1,15 @@
+"$schema" = "schemas/schema.json"
+
+[default]
+description = "Allows connecting to Ableton Live and using its whole API from the frontend."
+permissions = [
+    "allow-start",
+    "allow-close",
+    "allow-is-connected",
+    "allow-get-ping",
+    "allow-get-prop",
+    "allow-set-prop",
+    "allow-send-command",
+    "allow-add-listener",
+    "allow-remove-listener",
+]
