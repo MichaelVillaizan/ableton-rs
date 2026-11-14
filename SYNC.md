@@ -9,8 +9,8 @@ y solo se abren los archivos Rust afectados.
 
 | | |
 |---|---|
-| Commit de ableton-js traducido | `69de331e7fd6d987a3554a64e69f31eb2b996328` (2026-09-22) |
-| Versión de ableton-js / Remote Script | `5.0.3` → `ableton_core::PLUGIN_VERSION` en `crates/ableton-core/src/lib.rs` |
+| Commit de ableton-js traducido | `63bf873c5f1063a67011c6665d892833fcd54701` (2026-11-03) |
+| Versión de ableton-js / Remote Script | `5.0.4` → `ableton_core::PLUGIN_VERSION` en `crates/ableton-core/src/lib.rs` |
 
 **Al terminar una sincronización, actualiza esta tabla** con el nuevo commit y la
 nueva versión.
@@ -19,9 +19,9 @@ nueva versión.
 
 ```sh
 # 1. Qué cambió (resumen y diff; ignora tests, build y docs)
-git -C ../ableton-js log --oneline 69de331..HEAD
-git -C ../ableton-js diff --stat 69de331 HEAD -- src midi-script ':!*.spec.ts' ':!src/util/tests'
-git -C ../ableton-js diff 69de331 HEAD -- src midi-script ':!*.spec.ts' ':!src/util/tests'
+git -C ../ableton-js log --oneline 63bf873..HEAD
+git -C ../ableton-js diff --stat 63bf873 HEAD -- src midi-script ':!*.spec.ts' ':!src/util/tests'
+git -C ../ableton-js diff 63bf873 HEAD -- src midi-script ':!*.spec.ts' ':!src/util/tests'
 
 # 2. Aplica cada hunk según las secciones 3–5
 
@@ -37,6 +37,10 @@ protocolo (sección 6) o funciones nuevas o renombradas que el TS quizá aún no
 Qué ignorar: `*.spec.ts`, `src/util/tests/`, `src/util/logger.ts` (aquí se usa
 `tracing`), `midi-script/static/`, `vite.config.ts`, `package.json` (salvo la versión),
 `CHANGELOG.md`, `hooks/`.
+
+`scripts/` (pruebas manuales en TS contra un Live real) no forma parte de la librería.
+Cuando aparece uno nuevo, se porta como example en `crates/ableton-core/examples/`
+(p. ej. `test-message-throughput.ts` → `message_throughput.rs`).
 
 ## 3. Mapa de archivos
 

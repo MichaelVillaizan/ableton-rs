@@ -156,6 +156,46 @@ async fn delivers_listener_events_until_unsubscribed() {
     assert_eq!(envelope["commands"][0]["args"], json!({ "prop": "tempo" }));
 }
 
+/// Since 5.0.4 the Remote Script bundles queued frames into one `sendall`.
+#[tokio::test]
+async fn handles_several_frames_in_one_socket_write() {
+    let live = FakeLive::start(|command| match command["name"].as_str().unwrap() {
+        "add_listener" => Ok(command["args"]["eventId"].clone()),
+        _ => default_handler(command),
+    })
+    .await;
+    let ableton = connect(live.options()).await;
+    let song = ableton.song();
+
+    let (tx, mut rx) = mpsc::unbounded_channel();
+    let subscription = song
+        .on_tempo(move |tempo| {
+            tx.send(tempo).unwrap();
+        })
+        .await
+        .unwrap();
+
+    let tempos: Vec<f64> = (0..50).map(|i| 100.0 + f64::from(i)).collect();
+    live.push_bundle(
+        tempos
+            .iter()
+            .map(|tempo| (subscription.event_id(), json!(tempo))),
+    );
+
+    let mut received = Vec::new();
+    while received.len() < tempos.len() {
+        let tempo = tokio::time::timeout(Duration::from_secs(2), rx.recv())
+            .await
+            .expect("every bundled event should arrive")
+            .unwrap();
+        received.push(tempo);
+    }
+    assert_eq!(received, tempos);
+
+    // Commands still work after a burst of bundled frames.
+    assert_eq!(song.tempo().await.unwrap(), 120.0);
+}
+
 #[tokio::test]
 async fn reports_failed_commands_with_their_python_error_type() {
     let live = FakeLive::start(|command| match command["name"].as_str().unwrap() {

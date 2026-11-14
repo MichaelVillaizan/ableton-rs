@@ -62,7 +62,7 @@ pub use options::{AbletonOptions, CacheOptions};
 ///
 /// On start the client compares it with the version reported by the plugin
 /// and logs a warning when they differ.
-pub const PLUGIN_VERSION: &str = "5.0.3";
+pub const PLUGIN_VERSION: &str = "5.0.4";
 
 /// Everything needed for day-to-day use.
 pub mod prelude {

@@ -91,6 +91,16 @@ impl FakeLive {
         send(&self.connection, message(event, data, Value::Null));
     }
 
+    /// Pushes several listener events that leave in a single socket write.
+    pub fn push_bundle<'a>(&self, events: impl IntoIterator<Item = (&'a str, Value)>) {
+        if let Some(tx) = self.connection.lock().unwrap().as_ref() {
+            // Queued while the writer is idle, so it drains them in one batch.
+            for (event, data) in events {
+                let _ = tx.send(message(event, data, Value::Null));
+            }
+        }
+    }
+
     /// Drops the current connection from the server side.
     pub fn disconnect(&self) {
         if let Some(tx) = self.connection.lock().unwrap().take() {
@@ -112,10 +122,24 @@ async fn serve(
     let (tx, mut rx) = mpsc::unbounded_channel::<Message>();
     *connection.lock().unwrap() = Some(tx.clone());
 
+    // Like `ClientConnection._send_loop` in Socket.py, every frame that is
+    // already queued goes out in the same write, so the client sees several
+    // frames in one TCP read. tungstenite buffers `feed` until `flush`.
     tokio::spawn(async move {
-        while let Some(message) = rx.recv().await {
-            let closing = matches!(message, Message::Close(_));
-            if sink.send(message).await.is_err() || closing {
+        'send: while let Some(message) = rx.recv().await {
+            let mut next = Some(message);
+            while let Some(message) = next.take() {
+                let closing = matches!(message, Message::Close(_));
+                if sink.feed(message).await.is_err() {
+                    break 'send;
+                }
+                if closing {
+                    let _ = sink.flush().await;
+                    break 'send;
+                }
+                next = rx.try_recv().ok();
+            }
+            if sink.flush().await.is_err() {
                 break;
             }
         }

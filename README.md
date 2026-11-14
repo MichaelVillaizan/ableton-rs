@@ -36,6 +36,8 @@ ableton.close().await;
 ```
 
 Hay un ejemplo completo en `cargo run -p ableton-core --example basic`.
+`cargo run -p ableton-core --example message_throughput` mide el ritmo y la latencia
+de los eventos de listener (equivale a `scripts/test-message-throughput.ts`).
 
 ## Equivalencias con la API de JS
 
@@ -188,7 +190,8 @@ cargo clippy --workspace --all-targets
 
 Los tests de integración (`crates/ableton-core/tests`) levantan un servidor
 que imita a `Socket.py`: saludo `connect`, auth HMAC, batching, caché por etag,
-listeners, errores con `errorType`, timeouts y reconexión.
+listeners, varios frames en una misma escritura, errores con `errorType`,
+timeouts y reconexión.
 
 La versión del Remote Script esperada está en `ableton_core::PLUGIN_VERSION`
-(`5.0.3`). Al conectar se avisa si la del plugin instalado no coincide.
+(`5.0.4`). Al conectar se avisa si la del plugin instalado no coincide.
